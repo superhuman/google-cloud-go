@@ -338,6 +338,9 @@ func TestObjects(t *testing.T) {
 		if got, want := rc.ContentType(), "text/plain"; got != want {
 			t.Errorf("ContentType (%q) = %q; want %q", obj, got, want)
 		}
+		if got, want := rc.CacheControl(), "public, max-age=60"; got != want {
+			t.Errorf("CacheControl (%q) = %q; want %q", obj, got, want)
+		}
 		rc.Close()
 
 		// Check early close.
@@ -1422,6 +1425,7 @@ func TestIntegration_RequesterPays(t *testing.T) {
 func writeObject(ctx context.Context, obj *ObjectHandle, contentType string, contents []byte) error {
 	w := obj.NewWriter(ctx)
 	w.ContentType = contentType
+	w.CacheControl = "public, max-age=60"
 	if contents != nil {
 		if _, err := w.Write(contents); err != nil {
 			_ = w.Close()
